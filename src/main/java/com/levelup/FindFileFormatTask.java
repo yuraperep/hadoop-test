@@ -29,6 +29,7 @@ public class FindFileFormatTask {
 
         // Setup MapReduce
         job.setMapperClass(FindFileFormatMapper.class);
+        job.setCombinerClass(FindFileFormatReducer.class);
         job.setReducerClass(FindFileFormatReducer.class);
         job.setNumReduceTasks(1);
 
