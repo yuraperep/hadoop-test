@@ -1,9 +1,8 @@
 package com.levelup;
 
-import java.io.*;
-import java.net.URISyntaxException;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.*;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -11,6 +10,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class FindFileFormatTask {
 
@@ -38,8 +40,8 @@ public class FindFileFormatTask {
         job.setInputFormatClass(TextInputFormat.class);
 
         // Specify key / value
-        job.setOutputKeyClass(IntWritable.class);
-        job.setOutputValueClass(Text.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
 
         // Output
         FileOutputFormat.setOutputPath(job, outputDir);

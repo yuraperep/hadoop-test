@@ -5,7 +5,9 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
-import static com.levelup.LineParser.*;
+
+import static com.levelup.LineParser.getInt;
+import static com.levelup.LineParser.getString;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,13 +20,13 @@ public class FindUsersByConditionMapper extends Mapper<Object, Text, Text, IntWr
     public void map(Object key, Text value, Context context)
             throws IOException, InterruptedException {
 
-        try{
+        try {
             String line = value.toString();
-            Integer data4 = getInt(line,"data4");
-            if(data4!=null && data4>5000 && data4<8000){
-                context.write(new Text(getString(line,"user")),new IntWritable(1));
+            Integer data4 = getInt(line, "data4");
+            if (data4 != null && data4 > 5000 && data4 < 8000) {
+                context.write(new Text(getString(line, "user")), new IntWritable(1));
             }
-        }catch(StringIndexOutOfBoundsException | NumberFormatException e){
+        } catch (StringIndexOutOfBoundsException | NumberFormatException e) {
             e.printStackTrace();
         }
     }

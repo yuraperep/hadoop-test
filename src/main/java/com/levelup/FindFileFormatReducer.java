@@ -5,9 +5,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,16 +13,15 @@ import java.util.Set;
  * Time: 4:06 PM
  */
 public class FindFileFormatReducer extends
-        Reducer<IntWritable, Text, IntWritable, Text> {
+        Reducer<Text, IntWritable, Text, IntWritable> {
 
     @Override
-    public void reduce(IntWritable key, Iterable<Text> values, Context context)
+    public void reduce(Text key, Iterable<IntWritable> values, Context context)
             throws IOException, InterruptedException {
-        Set<String> resultFields = new HashSet<>();
-        for (Text value : values) {
-            String[] fields = value.toString().split(",");
-            resultFields.addAll(Arrays.asList(fields));
+        int count = 0;
+        for (IntWritable value : values) {
+            count += value.get();
         }
-        context.write(new IntWritable(1), new Text(resultFields.toString()));
+        context.write(key, new IntWritable(count));
     }
 }

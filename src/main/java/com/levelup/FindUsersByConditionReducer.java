@@ -12,7 +12,7 @@ import java.io.IOException;
  * Date: 11/16/13
  * Time: 2:12 PM
  */
-public class FindUsersByConditionReducer  extends
+public class FindUsersByConditionReducer extends
         Reducer<Text, IntWritable, Text, IntWritable> {
 
     @Override

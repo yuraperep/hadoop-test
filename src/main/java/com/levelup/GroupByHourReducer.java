@@ -15,7 +15,7 @@ import java.util.Date;
  * Date: 11/15/13
  * Time: 8:27 PM
  */
-public class GroupByHourReducer  extends
+public class GroupByHourReducer extends
         Reducer<IntWritable, Text, Text, IntWritable> {
 
     private MultipleOutputs mos;
@@ -28,11 +28,11 @@ public class GroupByHourReducer  extends
     @Override
     public void reduce(IntWritable key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
-          SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd.H'h'");
-          String fileName = df.format(new Date(key.get()*3600000l));
-          for (Text value : values) {
-            mos.write(value,"", fileName);
-          }
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd.H'h'");
+        String fileName = df.format(new Date(key.get() * 3600000l));
+        for (Text value : values) {
+            mos.write(value, "", fileName);
+        }
     }
 
     @Override
