@@ -4,10 +4,11 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import javax.script.*;
 import java.io.IOException;
+import java.util.Map;
 
-import static com.levelup.LineParser.getInt;
-import static com.levelup.LineParser.getString;
+import static com.levelup.LineParser.getFieldValueMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,16 +18,28 @@ import static com.levelup.LineParser.getString;
  */
 public class FindUsersByConditionMapper extends Mapper<Object, Text, Text, IntWritable> {
 
+    private static  ScriptEngineManager factory = new ScriptEngineManager();
+    private static ScriptEngine engine = factory.getEngineByName("rhino");
+
+    @Override
     public void map(Object key, Text value, Context context)
             throws IOException, InterruptedException {
 
         try {
-            String line = value.toString();
-            Integer data4 = getInt(line, "data4");
-            if (data4 != null && data4 > 5000 && data4 < 8000) {
-                context.write(new Text(getString(line, "user")), new IntWritable(1));
-            }
+            String condition = context.getConfiguration().get("condition");
+            Map<String,String> kv = getFieldValueMap(value.toString());
+            engine.getBindings(ScriptContext.ENGINE_SCOPE).clear();
+            engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(kv);
+            if((boolean)engine.eval(condition)){
+                context.write(new Text(kv.get("user")), new IntWritable(1));
+            };
         } catch (StringIndexOutOfBoundsException | NumberFormatException e) {
+            System.out.println("ERROR_IN_LINE="+value.toString());
+            e.printStackTrace();
+        } catch (ScriptException e){
+            // for numerous cases like "column with name data16 absent in line"
+            //System.out.println(e.getMessage());
+        } catch (Exception e){
             e.printStackTrace();
         }
     }

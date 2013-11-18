@@ -1,5 +1,8 @@
 package com.levelup;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: perep80
@@ -55,6 +58,17 @@ public class LineParser {
 
     public static String getFieldNamesString(String line) {
         return clearLine(line).replaceAll(":\"[a-z0-9.]+\"", "");
+    }
+
+    public static Map<String, String> getFieldValueMap(String line) {
+        String clearLine = clearLine(line).replace("\"","");
+        String[] pairs = clearLine.split(",");
+        Map<String,String> values = new HashMap<>();
+        for(String pair:pairs){
+            String[] keyValue = pair.split(":");
+            values.put(keyValue[0],keyValue[1]);
+        }
+        return values;
     }
 
 }
