@@ -29,7 +29,7 @@ public class FindUsersByConditionTask {
 
         // Create configuration
         Configuration conf = new Configuration(true);
-        conf.set("condition",args[2]);
+        conf.set("condition", args[2]);
 
         // Create job
         Job job = new Job(conf, "FindUseByCondition");

@@ -1,6 +1,8 @@
 package com.levelup;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,9 +14,9 @@ import java.util.Map;
 public class LineParser {
 
     public static String getString(String line, String fieldName) {
-        int fieldStart = line.indexOf(fieldName);
+        int fieldStart = line.indexOf("\"", line.indexOf(fieldName) + fieldName.length() + 2);
         if (fieldStart > -1)
-            return line.substring(fieldStart + fieldName.length() + 3, line.indexOf(",", fieldStart) - 1);
+            return line.substring(fieldStart + 1, line.indexOf("\"", fieldStart + 1));
         else
             return null;
     }
@@ -53,20 +55,45 @@ public class LineParser {
     }
 
     public static String convertToCsv(String line) {
-        return clearLine(line).replaceAll("\"[a-z0-9]+\":", "");
+        Map<String, String> kv = getFieldValueMap(line);
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        for (Map.Entry e : kv.entrySet()) {
+            sb.append(prefix).append(e.getKey()).append(":").append(e.getValue());
+            prefix = ",";
+        }
+        return sb.toString();
     }
 
-    public static String getFieldNamesString(String line) {
-        return clearLine(line).replaceAll(":\"[a-z0-9.]+\"", "");
+    private static String replaceValues(String line) {
+        String clearLine = clearLine(line);
+        return clearLine.replaceAll(":\\s*\"[a-z0-9.]+\"\\s*", "");
+    }
+
+    private static List<String> splitStringNoSpaces(String line) {
+        String[] fields = line.split(",");
+        List<String> result = new ArrayList<>();
+        for (String field : fields) {
+            if (field.indexOf("\"") > -1)
+                result.add(field.substring(field.indexOf("\"") + 1, field.lastIndexOf("\"")));
+        }
+        return result;
+    }
+
+    public static List<String> getFieldNames(String line) {
+        String fields = replaceValues(line);
+        return splitStringNoSpaces(fields);
     }
 
     public static Map<String, String> getFieldValueMap(String line) {
-        String clearLine = clearLine(line).replace("\"","");
+        String clearLine = clearLine(line).replace("\"", "");
         String[] pairs = clearLine.split(",");
-        Map<String,String> values = new HashMap<>();
-        for(String pair:pairs){
+        Map<String, String> values = new HashMap<>();
+        for (String pair : pairs) {
             String[] keyValue = pair.split(":");
-            values.put(keyValue[0],keyValue[1]);
+            if (keyValue.length == 2) {
+                values.put(keyValue[0].trim(), keyValue[1].trim());
+            }
         }
         return values;
     }
