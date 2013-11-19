@@ -11,7 +11,7 @@ import javax.script.ScriptException;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.levelup.LineParser.getFieldValueMap;
+import static com.levelup.LineUtils.getFieldValueMap;
 
 /**
  * Created with IntelliJ IDEA.

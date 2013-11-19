@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 
-import static com.levelup.LineParser.getFieldNames;
+import static com.levelup.LineUtils.getFieldValueMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +19,7 @@ public class FindFileFormatMapper extends Mapper<Object, Text, Text, IntWritable
     public void map(Object key, Text value, Context context)
             throws InterruptedException, IOException {
         try {
-            for (String field : getFieldNames(value.toString())) {
+            for (String field : getFieldValueMap(value.toString()).keySet()) {
                 context.write(new Text(field), new IntWritable(1));
             }
         } catch (StringIndexOutOfBoundsException e) {

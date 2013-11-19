@@ -5,9 +5,9 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.Map;
 
-import static com.levelup.LineParser.convertToCsv;
-import static com.levelup.LineParser.getLong;
+import static com.levelup.LineUtils.convertToCsv;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,11 +29,10 @@ public class GroupByHourMapper extends Mapper<Object, Text, IntWritable, Text> {
     public void map(Object key, Text value, Context context)
             throws InterruptedException, IOException {
         try {
-            String line = value.toString();
-            Long when = getLong(line, "when");
-            if (when == null) when = 0l;
-            int hourId = (int) (when / 3600000);
-            line = convertToCsv(line);
+            Map<String, String> kv = LineUtils.getFieldValueMap(value.toString());
+            Long when = Long.valueOf(kv.get("when"));
+            int hourId = (int) (when == null ? 0l : when / 3600000);
+            String line = convertToCsv(kv);
             context.write(new IntWritable(hourId), new Text(line));
         } catch (StringIndexOutOfBoundsException | NumberFormatException e) {
             context.write(new IntWritable(0), value);
