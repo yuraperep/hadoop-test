@@ -12,6 +12,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,48 +20,12 @@ import java.io.IOException;
  * Date: 11/15/13
  * Time: 8:25 PM
  */
-public class GroupByHourTask {
-
+public class GroupByHourTask<M, R, K, V>
+        extends GenericHadoopTask<GroupByHourMapper, GroupByHourReducer,IntWritable, Text> {
 
     public static void main(String[] args) throws IOException,
-            InterruptedException, ClassNotFoundException {
-
-        Path inputPath = new Path(args[0]);
-        Path outputDir = new Path(args[1]);
-
-        // Create configuration
-        Configuration conf = new Configuration(true);
-
-        // Create job
-        Job job = new Job(conf, "GroupByHour");
-        job.setJarByClass(GroupByHourMapper.class);
-
-        // Setup MapReduce
-        job.setMapperClass(GroupByHourMapper.class);
-        job.setReducerClass(GroupByHourReducer.class);
-        job.setNumReduceTasks(1);
-
-        // Specify key / value
-        job.setOutputKeyClass(IntWritable.class);
-        job.setOutputValueClass(Text.class);
-
-        // Input
-        FileInputFormat.addInputPath(job, inputPath);
-        job.setInputFormatClass(TextInputFormat.class);
-
-        // Output
-        FileOutputFormat.setOutputPath(job, outputDir);
-        job.setOutputFormatClass(TextOutputFormat.class);
-
-        // Delete output if exists
-        FileSystem hdfs = FileSystem.get(conf);
-        if (hdfs.exists(outputDir))
-            hdfs.delete(outputDir, true);
-
-        // Execute job
-        int code = job.waitForCompletion(true) ? 0 : 1;
-        System.exit(code);
-
+            InterruptedException, ClassNotFoundException, URISyntaxException {
+        GroupByHourTask<GroupByHourMapper, GroupByHourReducer,IntWritable, Text> task = new GroupByHourTask<>();
+        task.startTask(args);
     }
-
 }
