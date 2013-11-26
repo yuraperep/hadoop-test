@@ -1,5 +1,7 @@
 package com.levelup;
 
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
@@ -18,7 +20,7 @@ public class LineUtilsTest {
 
     Properties prop = new Properties();
 
-    @org.junit.Before
+    @Before
     public void setUp() throws Exception {
         prop.load(getClass().getResourceAsStream("/test.properties"));
 
@@ -26,6 +28,7 @@ public class LineUtilsTest {
 
 
     @Test
+    @Ignore
     public void testGoodString() throws Exception {
 
         String goodLine = (String) prop.get("goodLine");
@@ -40,6 +43,7 @@ public class LineUtilsTest {
     }
 
     @Test
+    @Ignore
     public void testLineWithSpaces() throws Exception {
 
         String lineWithSpaces = (String) prop.get("lineWithSpaces");
@@ -54,6 +58,21 @@ public class LineUtilsTest {
     }
 
     @Test
+    public void testLineWithInnerObjects() throws Exception {
+
+        String lineWithInnerObj = (String) prop.get("lineWithInnerObj");
+
+        Map<String, String> kv = getKVwithInnerObjectsMap(lineWithInnerObj);
+//        assertTrue(kv.get("key1").equals("value1"));
+//        assertTrue(kv.get("when").equals("12345678"));
+        assertTrue(kv.size() == 7);
+
+        String converted = convertToCsv(kv);
+        assertTrue(converted.length() == 37);
+    }
+
+    @Test
+    @Ignore
     public void testEmptyLine() throws Exception {
 
         String emptyLine = (String) prop.get("emptyLine");
@@ -63,4 +82,7 @@ public class LineUtilsTest {
         String converted = convertToCsv(kv);
         assertTrue(converted.length() == 0);
     }
+
+
+
 }
