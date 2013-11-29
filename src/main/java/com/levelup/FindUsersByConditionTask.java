@@ -13,11 +13,11 @@ import java.net.URISyntaxException;
  * Time: 2:12 PM
  */
 public class FindUsersByConditionTask<M, R, K, V>
-        extends GenericHadoopTask<FindUsersByConditionMapper, FindUsersByConditionReducer, Text, IntWritable> {
+        extends GenericHadoopTask<FindUsersByConditionRtbMapper, CounterReducer, Text, IntWritable> {
 
     public static void main(String[] args) throws IOException,
             InterruptedException, ClassNotFoundException, URISyntaxException {
-        FindUsersByConditionTask<FindUsersByConditionMapper, FindUsersByConditionReducer, Text, IntWritable> task = new FindUsersByConditionTask<>();
+        FindUsersByConditionTask<FindUsersByConditionRtbMapper, CounterReducer, Text, IntWritable> task = new FindUsersByConditionTask<>();
         task.startTask(args);
     }
 }

@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class FindFileFormatTask<M, R, K, V>
-        extends GenericHadoopTask<FindFileFormatMapper, FindFileFormatReducer, Text, IntWritable> {
+        extends GenericHadoopTask<FindFileFormatRtbMapper, CounterReducer, Text, IntWritable> {
 
     public static void main(String[] args) throws IOException,
             InterruptedException, ClassNotFoundException, URISyntaxException {
-        FindFileFormatTask<FindFileFormatMapper, FindFileFormatReducer, Text, IntWritable> task = new FindFileFormatTask<>();
+        FindFileFormatTask<FindFileFormatRtbMapper, CounterReducer, Text, IntWritable> task = new FindFileFormatTask<>();
         task.startTask(args);
     }
 

@@ -11,22 +11,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: perep80
- * Date: 11/15/13
- * Time: 8:25 PM
+ * User: Yuriy Perepelytsya
+ * Date: 11/29/13 : 3:37 PM
+ * Powered by IDEA
  */
-public class GroupByHourTask<M, R, K, V>
-        extends GenericHadoopTask<GroupByHourRtbMapper, GroupByHourReducer, IntWritable, Text> {
-
-
-
+public class GroupByHourRtbTask{
 
     public static void main(String[] args) throws IOException,
             InterruptedException, ClassNotFoundException, URISyntaxException {
 
         GenericRtbMapper mapper = new GenericRtbMapper(){
 
+            @Override
             protected void map(Mapper.Context context) throws Exception {
                 urlAuthority();
                 //TODO OR from "createdAt" ?- not finded so far
@@ -39,7 +35,8 @@ public class GroupByHourTask<M, R, K, V>
 
         GenericMultiOutputRtbReducer reducer = new GenericMultiOutputRtbReducer(){
 
-            protected void reduce(Writable key, Iterable<Writable> values) throws IOException, InterruptedException {
+            @Override
+            protected void reduce(Writable key, Iterable<Writable> values, Context context) throws IOException, InterruptedException {
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd.H'h'");
                 String fileName = df.format(new Date(((IntWritable)key).get() * 3600000l));
                 for (Writable value : values) {
@@ -48,7 +45,8 @@ public class GroupByHourTask<M, R, K, V>
             }
         };
 
-        GroupByHourTask<GroupByHourRtbMapper, GroupByHourReducer, IntWritable, Text> task = new GroupByHourTask<>();
-        task.startTask(args);
+        //HadoopTask<IntWritable, Text> task = new HadoopTask<IntWritable, Text>(mapper,reducer,args){};
+        new HadoopTask<IntWritable, Text>(mapper,reducer,args);
+        //task.startTask(args);
     }
 }

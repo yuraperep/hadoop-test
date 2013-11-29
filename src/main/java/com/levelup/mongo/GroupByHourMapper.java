@@ -1,5 +1,7 @@
-package com.levelup;
+package com.levelup.mongo;
 
+
+import com.levelup.LineUtils;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -7,7 +9,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.levelup.LineUtils.*;
+import static com.levelup.LineUtils.convertToCsv;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,26 +25,25 @@ public class GroupByHourMapper extends Mapper<Object, Text, IntWritable, Text> {
      *              like {"field1":"value1","field2":"value2"}
      *              <p/>
      *              We should clear value from {} characters,
-     *              only right sides of "field1":"value1" should left.
+     *              only right sides of "field1":"value1" should left
      *              Use hourId as outKey = calc from "when" in milliseconds
      */
     public void map(Object key, Text value, Context context)
             throws InterruptedException, IOException {
         try {
             Map<String, String> kv = LineUtils.getKVwithInnerObjectsMap(value.toString());
-            //TODO OR from "createdAt" ?- not finded so far
-            kv.put("when", Long.toString(getTimestampAsLongFromHexOid(kv.get("_id_$oid"))));
-            kv.put("url", getPathFromURL(kv.get("referer")));
+            // get timestamp from _id
+            //int value = Integer.parseInt(hex, 16); - first 4 bytes
+            ///OR from createdAt
+            // get domain from url
+
 
             Long when = Long.valueOf(kv.get("when"));
             int hourId = (int) (when == null ? 0l : when / 3600000);
             String line = convertToCsv(kv);
             context.write(new IntWritable(hourId), new Text(line));
         } catch (StringIndexOutOfBoundsException | NumberFormatException e) {
-            System.out.println("ERROR_LINE=" + value.toString());
             context.write(new IntWritable(0), value);
-        } catch (Exception e) {
-            System.out.println("ERROR_LINE=" + value.toString());
         }
     }
 }

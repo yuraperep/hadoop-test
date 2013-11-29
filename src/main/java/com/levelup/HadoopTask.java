@@ -16,12 +16,20 @@ import java.lang.reflect.ParameterizedType;
 import java.net.URISyntaxException;
 
 /**
- * Created with IntelliJ IDEA.
- * User: perep80
- * Date: 11/19/13
- * Time: 3:22 PM
+ * User: Yuriy Perepelytsya
+ * Date: 11/29/13 : 3:33 PM
+ * Powered by IDEA
  */
-public abstract class GenericHadoopTask<M extends Mapper, R extends Reducer, OutKey, OutVal> {
+public class HadoopTask<OutKey, OutVal> {
+
+    protected Mapper mapper;
+    protected Reducer reducer;
+
+    public HadoopTask(Mapper mapper, Reducer reducer,String[] args) throws InterruptedException, ClassNotFoundException, URISyntaxException, IOException {
+        this.mapper = mapper;
+        this.reducer = reducer;
+        this.startTask(args);
+    }
 
     public Class getClassByGenericTypeIndex(int i) {
         ParameterizedType superclass = (ParameterizedType) (getClass().getGenericSuperclass());
@@ -42,11 +50,11 @@ public abstract class GenericHadoopTask<M extends Mapper, R extends Reducer, Out
         // Create job
         Job job = new Job(conf, jobName);
         //job.setJarByClass(mapperType);
-        job.setJarByClass(getClassByGenericTypeIndex(0));
+        job.setJarByClass(getClass());
 
         // Setup MapReduce
-        job.setMapperClass(getClassByGenericTypeIndex(0));
-        job.setReducerClass(getClassByGenericTypeIndex(1));
+        job.setMapperClass(mapper.getClass());
+        job.setReducerClass(reducer.getClass());
         job.setNumReduceTasks(1);
 
         // Input
@@ -54,8 +62,8 @@ public abstract class GenericHadoopTask<M extends Mapper, R extends Reducer, Out
         job.setInputFormatClass(TextInputFormat.class);
 
         // Specify key / value
-        job.setOutputKeyClass(getClassByGenericTypeIndex(2));
-        job.setOutputValueClass(getClassByGenericTypeIndex(3));
+        job.setOutputKeyClass(getClassByGenericTypeIndex(0));
+        job.setOutputValueClass(getClassByGenericTypeIndex(1));
 
         // Output
         FileOutputFormat.setOutputPath(job, outputDir);
@@ -75,7 +83,4 @@ public abstract class GenericHadoopTask<M extends Mapper, R extends Reducer, Out
 
     public void configureJob(Job job) {
     }
-
-    ;
-
 }
